@@ -1,0 +1,22 @@
+# Виртуальное окружение (самое главное)
+.venv/
+venv/
+ENV/
+env/
+
+# Кэш Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Настройки PyCharm (IDE)
+.idea/
+
+# Отчеты Allure и логи Pytest
+allure-results/
+allure-report/
+.pytest_cache/
+*.log
+
+# Файлы локальной конфигурации (где могут быть пароли)
+.env
