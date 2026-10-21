@@ -1,9 +1,10 @@
-import requests, pytest, random
+from sqlalchemy.sql.functions import rollup
 
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.models.login_user_request import LoginUserRequest
 
+import requests, pytest, random
 
 @pytest.mark.api
 class TestCreateUser:
@@ -12,7 +13,7 @@ class TestCreateUser:
 
         login_user_request = LoginUserRequest(username="admin", password="123456")
 
-        login_admin_response = requests.post(
+        admin_response = requests.post(
             url="http://localhost:4111/api/auth/token/login",
             json=login_user_request.model_dump(),
             headers={
@@ -20,13 +21,14 @@ class TestCreateUser:
                 "Content-Type" : "application/json"
                 }
         )
-        assert login_admin_response.status_code == 200
-        token = login_admin_response.json().get("token")
+        assert admin_response.status_code == 200
+        token = admin_response.json().get("token")
+
 
         # ==================================================== создаем юзера
-        #username = f"Malkin{random.randint(100,999)}"
+        username = f"Malkin{random.randint(100,999)}"
 
-        create_user_request = CreateUserRequest(username="Max123", password="Pas!sw0rd", role="ROLE_USER")
+        create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         response = requests.post(
             url="http://localhost:4111/api/admin/create",
             json=create_user_request.model_dump(),
@@ -57,31 +59,29 @@ class TestCreateUser:
     )
     def test_create_user_invalid(self, username, password):
         #============================= авторизация под админом чтобы были права создать юзера
-        login_admin_response = requests.post(
+        login_user_request = LoginUserRequest(username="admin", password="123456")
+
+        admin_response = requests.post(
             url="http://localhost:4111/api/auth/token/login",
-            json={
-                "username": "admin",
-                "password": "123456"
-            },
+            json=login_user_request.model_dump(),
             headers={
                 "accept": "application/json",
                 "Content-Type": "application/json"
             }
         )
-        token = login_admin_response.json().get("token")
+
+        token = admin_response.json().get("token")
 
         #=============================================== создаем самого юзера
-        create_user_response = requests.post(
+        create_user_request = CreateUserRequest(username=username, password=password, role="ROLE_USER")
+
+        response = requests.post(
             url="http://localhost:4111/api/admin/create",
-            json={
-                "username": username,
-                "password": password,
-                "role": "ROLE_USER"
-            },
+            json=create_user_request.model_dump(),
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {token}"
             }
         )
 
-        assert create_user_response.status_code == 400
+        assert response.status_code == 400
