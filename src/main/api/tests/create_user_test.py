@@ -1,10 +1,8 @@
 from src.main.api.models.create_user_request import CreateUserRequest
-from src.main.api.models.create_user_response import CreateUserResponse
-from src.main.api.models.login_user_request import LoginUserRequest
 from src.main.api.requests.create_user_requester import CreateUserRequester
 from src.main.api.specs.request_specs import RequestSpecs
 from src.main.api.specs.response_specs import ResponseSpecs
-import requests, pytest, random
+import pytest, random
 
 @pytest.mark.api
 class TestCreateUser:
@@ -20,6 +18,8 @@ class TestCreateUser:
 
         assert create_user_request.username == response.username
         assert create_user_request.role == response.role
+
+
 
     # ===================================== негативные тесты на создание пользователя через параметризацию
     @pytest.mark.parametrize(

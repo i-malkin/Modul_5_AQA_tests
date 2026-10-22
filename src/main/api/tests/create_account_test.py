@@ -1,5 +1,4 @@
 import requests, pytest, random
-
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.login_user_request import LoginUserRequest
 from src.main.api.models.create_account_response import CreateAccountResponse

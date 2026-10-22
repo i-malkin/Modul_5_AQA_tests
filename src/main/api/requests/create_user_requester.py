@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from requests import Response
+
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.requests.requester import Requester
@@ -7,7 +9,7 @@ import requests
 
 
 class CreateUserRequester(Requester):
-    def post(self, create_user_request: CreateUserRequest):
+    def post(self, create_user_request: CreateUserRequest) -> CreateUserResponse | Response:
         url=f'{self.base_url}/admin/create'
         response = requests.post(
             url=url,
