@@ -32,3 +32,4 @@ class RequestSpecs:
                 "base_url": RequestSpecs.BASE_URL
             }
         raise Exception("Failed to authenticate")
+
