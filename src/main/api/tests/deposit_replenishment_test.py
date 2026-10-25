@@ -64,7 +64,7 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
     accountId = create_account_response.json()["id"]
 
 
-    def test_balance_replenishment_positive(self):
+    def test_deposit_replenishment_positive(self):
         #========================================== тест пополнение баланса
         replenish_response = requests.post(
             url="http://localhost:4111/api/account/deposit",
@@ -77,26 +77,24 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
                 "Authorization": f"Bearer {TestBalanceReplenishment.token}",
             }
         )
-
         assert replenish_response.status_code == 200
         assert replenish_response.json()["balance"] == 2500.5
 
 
     @pytest.mark.parametrize(
-        "summa", [(-100), (0), (500), (9900)]
+        "amount", [(-100), (0), (999), (9001)]
     )
-    def test_balance_replenishment_negative(self, summa):
+    def test_deposit_replenishment_negative(self, amount):
         replenish_response = requests.post(
             url="http://localhost:4111/api/account/deposit",
             json={
                 "accountId": TestBalanceReplenishment.accountId,
-                "amount": summa
+                "amount": amount
             },
             headers={
                 "accept": "*/*",
                 "Authorization": f"Bearer {TestBalanceReplenishment.token}",
             }
         )
-
         assert replenish_response.status_code == 400
         assert "Amount must be between 1000 and 9000" in replenish_response.json()["error"]
