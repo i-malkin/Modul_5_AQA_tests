@@ -1,7 +1,8 @@
+import pytest
 import requests, random
 
 
-class TestCredit:
+class TestCreditRequest:
     # ====================================== авторизуемся под админом, забираем токен
     login_admin_response = requests.post(
         url="http://localhost:4111/api/auth/token/login",
@@ -66,16 +67,33 @@ class TestCredit:
         credit_response = requests.post(
             url="http://localhost:4111/api/credit/request",
             json={
-                "accountId": TestCredit.accountId,
+                "accountId": TestCreditRequest.accountId,
                 "amount": 10000,
                 "termMonths": 12
             },
             headers={
                 "accept": "*/*",
-                "Authorization": f"Bearer {TestCredit.user_token}",
+                "Authorization": f"Bearer {TestCreditRequest.user_token}",
             }
         )
 
         assert credit_response.status_code == 201
         assert credit_response.json().get("balance") == 10000
+
+
+    def test_credit_request_negative(self):
+        credit_response = requests.post(
+            url="http://localhost:4111/api/credit/request",
+            json={
+                "accountId": TestCreditRequest.accountId,
+                "amount": 4999,
+                "termMonths": 12
+            },
+            headers={
+                "accept": "*/*",
+                "Authorization": f"Bearer {TestCreditRequest.user_token}",
+            }
+        )
+        assert credit_response.status_code == 400
+
 
