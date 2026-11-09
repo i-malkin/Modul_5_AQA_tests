@@ -16,7 +16,7 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
         }
     )
     assert login_admin_response.status_code == 200
-    token = login_admin_response.json().get("token")
+    admin_token = login_admin_response.json().get("token")
 
     # ======================= создаем пользователя, прокинули токен админа, чтобы создать юзера
     username = f"Malkin{random.randint(100, 999)}"
@@ -29,7 +29,7 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
         },
         headers={
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {admin_token}"
         }
     )
     assert create_user_response.status_code == 200
@@ -47,14 +47,14 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
         }
     )
     assert login_user_response.status_code == 200
-    token = login_user_response.json().get("token")
+    user_token = login_user_response.json().get("token")
 
     # ======================= создаем счет для юзера с помощью его токена
     create_account_response = requests.post(
         url="http://localhost:4111/api/account/create",
         headers={
             "accept": "*/*",
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {user_token}",
         }
 
     )
@@ -74,7 +74,7 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
             },
             headers={
                 "accept": "*/*",
-                "Authorization": f"Bearer {TestBalanceReplenishment.token}",
+                "Authorization": f"Bearer {TestBalanceReplenishment.user_token}",
             }
         )
         assert replenish_response.status_code == 200
@@ -93,7 +93,7 @@ class TestBalanceReplenishment:  # ===== тест пополнения бала�
             },
             headers={
                 "accept": "*/*",
-                "Authorization": f"Bearer {TestBalanceReplenishment.token}",
+                "Authorization": f"Bearer {TestBalanceReplenishment.user_token}",
             }
         )
         assert replenish_response.status_code == 400
