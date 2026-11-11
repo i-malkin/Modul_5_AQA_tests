@@ -19,7 +19,6 @@ class TestCreateAccount:
 
 
 
-
         response = CreateAccountRequester(
             request_spect=RequestSpecs.auth_headers(username=username, password="Pas!sw0rd"),
             response_spec=ResponseSpecs.request_created()
