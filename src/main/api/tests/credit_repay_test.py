@@ -1,117 +1,87 @@
 import requests, random
 
+from src.main.api.models.create_user_request import CreateUserRequest
+from src.main.api.models.credit_request import CreditRequest
+from src.main.api.models.repay_request import RepayRequest
+from src.main.api.requests.create_account_requester import CreateAccountRequester
+from src.main.api.requests.create_user_requester import CreateUserRequester
+from src.main.api.requests.credit_requester import CreditRequester
+from src.main.api.requests.repay_requester import RepayRequester
+from src.main.api.specs.request_specs import RequestSpecs
+from src.main.api.specs.response_specs import ResponseSpecs
+
 
 class TestCreditRepay:
-    # ================================ авторизуемся под админом чтобы создать пользователя
-    login_admin_response = requests.post(
-        url="http://localhost:4111/api/auth/token/login",
-        json={
-            "username": "admin",
-            "password": "123456"
-        },
-        headers={
-            "accept": "application/json",
-            "Content-Type": "application/json"
-        }
-    )
-    assert login_admin_response.status_code == 200
-    admin_token = login_admin_response.json().get("token")
-
-    # ======================= создаем пользователя, прокинули токен админа, чтобы создать юзера ROLE_CREDIT_SECRET
-    username_1 = f"Malkin{random.randint(100, 999)}"
-    create_user_response = requests.post(
-        url="http://localhost:4111/api/admin/create",
-        json={
-            "username": username_1,
-            "password": "Pas!sw0rd",
-            "role": "ROLE_CREDIT_SECRET"
-        },
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {admin_token}"
-        }
-    )
-    assert create_user_response.status_code == 200
-
-    # ======================= авторизовались пользователем, которого создали, взяли токен юзера
-    login_user_response = requests.post(
-        url="http://localhost:4111/api/auth/token/login",
-        json={
-            "username": username_1,
-            "password": "Pas!sw0rd",
-        },
-        headers={
-            "accept": "application/json",
-            "Content-Type": "application/json"
-        }
-    )
-    assert login_user_response.status_code == 200
-    user_token = login_user_response.json().get("token")  # get TOKEN user
-
-    # ======================= создаем счет для юзера с помощью его токена
-    create_account_response = requests.post(
-        url="http://localhost:4111/api/account/create",
-        headers={
-            "accept": "*/*",
-            "Authorization": f"Bearer {user_token}",
-        }
-
-    )
-    assert create_account_response.status_code == 201
-    assert create_account_response.json()["balance"] == 0
-
-    accountId = create_account_response.json()["id"]  # get ID user
-
-    #===================================== запрашиваем кредит
-    credit_response = requests.post(
-        url="http://localhost:4111/api/credit/request",
-        json={
-            "accountId": accountId,
-            "amount": 10000,
-            "termMonths": 12
-        },
-        headers={
-            "accept": "*/*",
-            "Authorization": f"Bearer {user_token}",
-        }
-    )
-    assert credit_response.status_code == 201
-    assert credit_response.json().get("balance") == 10000
-
-    creditID = credit_response.json()["creditId"]     # get credit ID number
-    print(f'Кредитный ID: {creditID}')
-
-    # тесты =====================================
-
-    def test_credit_repay_negative(self):
-        repay_response = requests.post(
-            url="http://localhost:4111/api/credit/repay",
-            json={
-                "creditId": TestCreditRepay.creditID,
-                "accountId": TestCreditRepay.accountId,
-                "amount": 5000,
-            },
-            headers={
-                "accept": "*/*",
-                "Authorization": f"Bearer {TestCreditRepay.user_token}",
-            }
-        )
-        assert repay_response.status_code == 422
-        assert "The amount is not enough" in repay_response.json()["error"]
 
     def test_credit_repay_positive(self):
-        repay_response = requests.post(
-            url="http://localhost:4111/api/credit/repay",
-            json={
-                "creditId": TestCreditRepay.creditID,
-                "accountId": TestCreditRepay.accountId,
-                "amount": 10000,
-            },
-            headers={
-                "accept": "*/*",
-                "Authorization": f"Bearer {TestCreditRepay.user_token}",
-            }
-        )
-        assert repay_response.status_code == 200
-        assert repay_response.json()["amountDeposited"] == 10000
+        username = f"Malkin{random.randint(100, 999)}"
+
+        create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
+        CreateUserRequester(
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
+            response_spec=ResponseSpecs.request_ok()
+        ).post(create_user_request)
+
+        # ======================= логинимся юзером ОДИН раз, заголовки используем дальше
+
+        user_specs = RequestSpecs.auth_headers(username=username, password="Pas!sw0rd")
+
+        # ======================= создаем счета, забираем id
+        account = CreateAccountRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_created()
+        ).post()
+
+        request_credit = CreditRequest(accountId=account.id, amount=10000, termMonths=12)
+        response_credit = CreditRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_created()
+        ).post(request_credit)
+
+        creditID = response_credit.creditId
+        request_repay = RepayRequest(creditId=creditID, accountId=account.id, amount=10000)
+        response_repay = RepayRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_ok()
+        ).post(request_repay)
+
+        assert response_repay.creditId == creditID
+        assert response_repay.amountDeposited == 10000
+
+
+
+    def test_credit_repay_negative(self):
+        username = f"Malkin{random.randint(100, 999)}"
+
+        create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
+        CreateUserRequester(
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
+            response_spec=ResponseSpecs.request_ok()
+        ).post(create_user_request)
+
+        # ======================= логинимся юзером ОДИН раз, заголовки используем дальше
+
+        user_specs = RequestSpecs.auth_headers(username=username, password="Pas!sw0rd")
+
+        # ======================= создаем счета, забираем id
+        account = CreateAccountRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_created()
+        ).post()
+
+        request_credit = CreditRequest(accountId=account.id, amount=10000, termMonths=12)
+        response_credit = CreditRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_created()
+        ).post(request_credit)
+
+        creditID = response_credit.creditId
+        request_repay = RepayRequest(creditId=creditID, accountId=account.id, amount=5000)
+        response_repay = RepayRequester(
+            request_spec=user_specs,
+            response_spec=ResponseSpecs.request_unprocessable()
+        ).post(request_repay)
+
+        assert "The amount is not enough" in response_repay.json()["error"]
+
 
