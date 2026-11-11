@@ -14,7 +14,8 @@ class TestUserLogin:
         login_user_request = LoginUserRequest(username="admin", password="123456")
 
         response = LoginUserRequester(
-            request_spect=RequestSpecs.unauth_headers(),
+            request_spec
+            =RequestSpecs.unauth_headers(),
             response_spec=ResponseSpecs.request_ok()
         ).post(login_user_request)
 
@@ -28,7 +29,8 @@ class TestUserLogin:
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
 
         CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec
+            =RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
@@ -36,7 +38,8 @@ class TestUserLogin:
         login_user_request = LoginUserRequest(username=username, password="Pas!sw0rd")
 
         response = LoginUserRequester(
-            request_spect=RequestSpecs.unauth_headers(),
+            request_spec
+            =RequestSpecs.unauth_headers(),
             response_spec=ResponseSpecs.request_ok()
         ).post(login_user_request)
 

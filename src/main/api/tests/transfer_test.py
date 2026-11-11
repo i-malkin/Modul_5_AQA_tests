@@ -20,7 +20,8 @@ class TestTransfer:
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec
+            =RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
@@ -29,29 +30,34 @@ class TestTransfer:
 
         # ======================= создаем 2 счета, забираем их id и пополняем
         account_1 = CreateAccountRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         account_2 = CreateAccountRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         deposit_request = DepositRequest(accountId=account_1.id, amount=4500)
         DepositRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_ok()
         ).post(deposit_request)
 
         transfer_request = TransferRequest(fromAccountId=account_1.id, toAccountId=account_2.id, amount=500)
         response=TransferRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_ok()
         ).post(transfer_request)
 
         assert response.fromAccountId == account_1.id
         assert response.fromAccountIdBalance == 4000
+
 
     @pytest.mark.parametrize("amount, expected_error", [
         (-1, "Amount must be greater than 0"),
@@ -65,7 +71,8 @@ class TestTransfer:
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec
+            =RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
@@ -74,24 +81,28 @@ class TestTransfer:
 
         # ======================= создаем 2 счета, забираем их id и пополняем
         account_1 = CreateAccountRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         account_2 = CreateAccountRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         deposit_request = DepositRequest(accountId=account_1.id, amount=8000)
         DepositRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_ok()
         ).post(deposit_request)
 
         transfer_request = TransferRequest(fromAccountId=account_1.id, toAccountId=account_2.id, amount=amount)
         response=TransferRequester(
-            request_spect=user_specs,
+            request_spec
+            =user_specs,
             response_spec=ResponseSpecs.request_bad()
         ).post(transfer_request)
 

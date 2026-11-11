@@ -13,14 +13,14 @@ class TestCreateAccount:
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
 
 
         response = CreateAccountRequester(
-            request_spect=RequestSpecs.auth_headers(username=username, password="Pas!sw0rd"),
+            request_spec=RequestSpecs.auth_headers(username=username, password="Pas!sw0rd"),
             response_spec=ResponseSpecs.request_created()
         ).post()
 

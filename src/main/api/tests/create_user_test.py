@@ -12,7 +12,7 @@ class TestCreateUser:
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         response = CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
@@ -41,7 +41,7 @@ class TestCreateUser:
         create_user_request = CreateUserRequest(username=username, password=password, role="ROLE_USER")
 
         CreateUserRequester(
-            request_spect=RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_bad()
         ).post(create_user_request)
 
