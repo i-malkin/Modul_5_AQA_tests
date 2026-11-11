@@ -42,6 +42,8 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
         assert response.balance == 2500.5
 
 
+
+
     @pytest.mark.parametrize("amount", [-100, 0, 999, 9001])
     def test_deposit_replenishment_negative(self, amount):
         username = f"Malkin{random.randint(100, 999)}"
