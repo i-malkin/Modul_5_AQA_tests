@@ -18,8 +18,7 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
-            request_spec
-            =RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
@@ -28,16 +27,14 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
 
         # ======================= создаем счет, забираем его id
         account = CreateAccountRequester(
-            request_spec
-            =user_specs,
+            request_spec=user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         # ======================= пополняем счет
         deposit_request = DepositRequest(accountId=account.id, amount=2500.5)
         response = DepositRequester(
-            request_spec
-            =user_specs,
+            request_spec=user_specs,
             response_spec=ResponseSpecs.request_ok()
         ).post(deposit_request)
 
@@ -52,24 +49,21 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
         username = f"Malkin{random.randint(100000, 999999)}"
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
-            request_spec
-            =RequestSpecs.auth_headers(username="admin", password="123456"),
+            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
             response_spec=ResponseSpecs.request_ok()
         ).post(create_user_request)
 
         user_specs = RequestSpecs.auth_headers(username=username, password="Pas!sw0rd")
 
         account = CreateAccountRequester(
-            request_spec
-            =user_specs,
+            request_spec=user_specs,
             response_spec=ResponseSpecs.request_created()
         ).post()
 
         deposit_request = DepositRequest(accountId=account.id, amount=amount)
         # спека проверяет статус 400, а requester вернет сырой Response (не модель)
         response = DepositRequester(
-            request_spec
-            =user_specs,
+            request_spec=user_specs,
             response_spec=ResponseSpecs.request_bad()
         ).post(deposit_request)
 

@@ -1,4 +1,4 @@
-import requests, random
+import pytest, random
 
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.credit_request import CreditRequest
@@ -38,14 +38,14 @@ class TestCreditRepay:
             response_spec=ResponseSpecs.request_created()
         ).post(request_credit)
 
-        creditID = response_credit.creditId
-        request_repay = RepayRequest(creditId=creditID, accountId=account.id, amount=10000)
+        credit_id = response_credit.creditId
+        request_repay = RepayRequest(creditId=credit_id, accountId=account.id, amount=10000)
         response_repay = RepayRequester(
             request_spec=user_specs,
             response_spec=ResponseSpecs.request_ok()
         ).post(request_repay)
 
-        assert response_repay.creditId == creditID
+        assert response_repay.creditId == credit_id
         assert response_repay.amountDeposited == 10000
 
 
@@ -75,8 +75,8 @@ class TestCreditRepay:
             response_spec=ResponseSpecs.request_created()
         ).post(request_credit)
 
-        creditID = response_credit.creditId
-        request_repay = RepayRequest(creditId=creditID, accountId=account.id, amount=5000)
+        credit_id = response_credit.creditId
+        request_repay = RepayRequest(creditId=credit_id, accountId=account.id, amount=5000)
         response_repay = RepayRequester(
             request_spec=user_specs,
             response_spec=ResponseSpecs.request_unprocessable()

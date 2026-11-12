@@ -8,11 +8,11 @@ from src.main.api.requests.requester import Requester
 
 
 class TransferRequester(Requester):
-    def post(self, deposit_request: TransferRequest) -> TransferResponse | Response:
+    def post(self, transfer_request: TransferRequest) -> TransferResponse | Response:
         url=f'{self.base_url}/account/transfer'
         response = requests.post(
             url=url,
-            json=deposit_request.model_dump(),
+            json=transfer_request.model_dump(),
             headers=self.headers
         )
         self.response_spec(response)

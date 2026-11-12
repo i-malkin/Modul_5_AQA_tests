@@ -8,7 +8,7 @@ import pytest, random
 class TestCreateUser:
 
     def test_create_user_valid(self):  # ===========  создание пользователя, позитивный тест
-        username = f"Malkin{random.randint(100,999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         response = CreateUserRequester(
