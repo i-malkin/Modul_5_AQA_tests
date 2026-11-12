@@ -25,7 +25,7 @@ class TestUserLogin:
 
 
     def test_login_user(self):  #===== тест создания пользователя
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
 
         CreateUserRequester(

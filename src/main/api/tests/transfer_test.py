@@ -16,7 +16,7 @@ class TestTransfer:
 
     def test_transfer_positive(self):
         # ======================= создаем юзера (под админом)
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
@@ -67,7 +67,7 @@ class TestTransfer:
     ])
     def test_transfer_negative(self, amount, expected_error):
         # ======================= создаем юзера (под админом)
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(

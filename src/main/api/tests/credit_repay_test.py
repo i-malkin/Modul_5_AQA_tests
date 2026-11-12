@@ -10,11 +10,11 @@ from src.main.api.requests.repay_requester import RepayRequester
 from src.main.api.specs.request_specs import RequestSpecs
 from src.main.api.specs.response_specs import ResponseSpecs
 
-
+@pytest.mark.api
 class TestCreditRepay:
 
     def test_credit_repay_positive(self):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
         CreateUserRequester(
@@ -51,7 +51,7 @@ class TestCreditRepay:
 
 
     def test_credit_repay_negative(self):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
         CreateUserRequester(

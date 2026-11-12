@@ -14,7 +14,7 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
 
     def test_deposit_replenishment_positive(self):
         # ======================= создаем юзера (под админом)
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
@@ -49,7 +49,7 @@ class TestDepositReplenishment:  # ===== тест пополнения бала�
 
     @pytest.mark.parametrize("amount", [-100, 0, 999, 9001])
     def test_deposit_replenishment_negative(self, amount):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
             request_spec

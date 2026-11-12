@@ -8,11 +8,11 @@ from src.main.api.requests.credit_requester import CreditRequester
 from src.main.api.specs.request_specs import RequestSpecs
 from src.main.api.specs.response_specs import ResponseSpecs
 
-
+@pytest.mark.api
 class TestCreditRequest:
 
     def test_credit_request_positive(self):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
         CreateUserRequester(
@@ -43,7 +43,7 @@ class TestCreditRequest:
 
     @pytest.mark.parametrize("amount", [4999, 15001])
     def test_credit_request_negative(self, amount):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_CREDIT_SECRET")
         CreateUserRequester(

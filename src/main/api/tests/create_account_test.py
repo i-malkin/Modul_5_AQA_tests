@@ -9,7 +9,7 @@ from src.main.api.specs.response_specs import ResponseSpecs
 @pytest.mark.api
 class TestCreateAccount:
     def test_create_account(self):
-        username = f"Malkin{random.randint(100, 999)}"
+        username = f"Malkin{random.randint(100000, 999999)}"
 
         create_user_request = CreateUserRequest(username=username, password="Pas!sw0rd", role="ROLE_USER")
         CreateUserRequester(
