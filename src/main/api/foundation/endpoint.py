@@ -2,6 +2,8 @@ from src.main.api.models.base_model import BaseModel
 from typing import Optional, Type
 from dataclasses import dataclass
 from enum import Enum
+
+from src.main.api.models.create_account_response import CreateAccountResponse
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.models.login_user_response import LoginUserResponse
@@ -33,4 +35,8 @@ class Endpoint(Enum):
         response_model=LoginUserResponse
     )
 
-
+    CREATE_ACCOUNT = EndpointConfiguration(
+        request_model=None,
+        url="/account/create",
+        response_model=CreateAccountResponse
+    )
