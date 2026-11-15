@@ -5,13 +5,13 @@ import rstr, uuid, random
 
 class RandomModelGenerator:
     @staticmethod
-    def generate(cls, type) -> Any:
+    def generate(cls) -> Any:
         type_hints = get_type_hints(cls, include_extras=True)
         init_data = {}
 
         for field_name, annotated_type in type_hints.items():
             rule = None
-            actual_type = annotated_type()
+            actual_type = annotated_type
 
             if get_origin(annotated_type) is Annotated:
                 actual_type, *annotations = get_args(annotated_type)
@@ -49,7 +49,7 @@ class RandomModelGenerator:
             return random.choice([True, False])
         elif field_type is list:
             return [str(uuid.uuid4())[:5]]
-        elif isinstance(field_type, type)
+        elif isinstance(field_type, type):
             return RandomModelGenerator.generate(field_type)
         return None
 

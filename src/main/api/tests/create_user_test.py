@@ -2,13 +2,10 @@ from src.main.api.generators.model_generator import RandomModelGenerator
 from src.main.api.models.create_user_request import CreateUserRequest
 import pytest
 
-@pytest.mark.api
+@pytest.mark.senior
 class TestCreateUser:
 
-    @pytest.mark.parametrize(
-        "create_user_request",
-        [RandomModelGenerator.generate(CreateUserRequest)],
-    )
+    @pytest.mark.parametrize("create_user_request", [RandomModelGenerator.generate(CreateUserRequest)])
     def test_create_user_valid(self, api_manager, create_user_request):
         response = api_manager.admin_steps.create_user(create_user_request)
 

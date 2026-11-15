@@ -1,6 +1,6 @@
 from src.main.api.generators.creations_rule import CreationsRule
 from src.main.api.models.base_model import BaseModel
-from sqlalchemy.sql.annotation import Annotated
+from typing import Annotated
 
 
 
