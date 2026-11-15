@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
+from src.main.api.models.login_user_response import LoginUserResponse
 
 
 @dataclass()
@@ -16,7 +17,7 @@ class EndpointConfiguration:
 class Endpoint(Enum):
     ADMIN_CREATE_USER = EndpointConfiguration(
         request_model=CreateUserRequest,
-        url="/account/create",
+        url="/admin/create",
         response_model=CreateUserResponse
     )
 
@@ -26,5 +27,10 @@ class Endpoint(Enum):
         response_model=None
     )
 
+    LOGIN_USER = EndpointConfiguration(
+        request_model=None,
+        url="/auth/token/login",
+        response_model=LoginUserResponse
+    )
 
 

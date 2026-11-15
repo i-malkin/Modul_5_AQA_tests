@@ -1,11 +1,7 @@
-import logging
-from typing import List, Any
-
-import pytest
-
-from src.main.api.classes.api_manager import ApiManager
-from src.main.api.fixterus.api_fixture import api_manager
 from src.main.api.models.create_user_response import CreateUserResponse
+from src.main.api.classes.api_manager import ApiManager
+from typing import List, Any
+import logging, pytest
 
 
 @pytest.fixture

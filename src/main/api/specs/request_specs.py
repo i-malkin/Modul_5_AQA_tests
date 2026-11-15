@@ -4,7 +4,6 @@ from src.main.api.models.login_user_response import LoginUserResponse
 
 
 class RequestSpecs:
-    BASE_URL = "http://localhost:4111/api"
     @staticmethod
     def base_headers():
         return {
@@ -30,6 +29,5 @@ class RequestSpecs:
 
     @staticmethod
     def unauth_headers():
-        return {
-            RequestSpecs.base_headers(),
-        }
+        return RequestSpecs.base_headers()
+

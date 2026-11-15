@@ -7,10 +7,10 @@ import pytest, random
 @pytest.mark.api
 class TestCreateUser:
 
-    def test_create_user_valid(self, api_manager):  # ===========  создание пользователя, позитивный тест
+    def test_create_user_valid(self, api_manager):
         #username = f"Malkin{random.randint(100000, 999999)}"
 
-        create_user_request = CreateUserRequest(username="Valkiria", password="Pas!sw0rd", role="ROLE_USER")
+        create_user_request = CreateUserRequest(username="max111", password="Pas!sw0rd", role="ROLE_USER")
         response = api_manager.admin_steps.create_user(create_user_request)
 
         assert create_user_request.username == response.username
@@ -18,7 +18,6 @@ class TestCreateUser:
 
 
 
-    # ===================================== негативные тесты на создание пользователя через параметризацию
     @pytest.mark.parametrize(
         "username, password",
         [
@@ -33,13 +32,9 @@ class TestCreateUser:
             ("Max6", "PAS!SWRRD"),
         ]
     )
-    def test_create_user_invalid(self, username, password):
-        #=============================================== создаем юзера
+    def test_create_user_invalid(self, username, password, api_manager):
         create_user_request = CreateUserRequest(username=username, password=password, role="ROLE_USER")
 
-        CreateUserRequester(
-            request_spec=RequestSpecs.auth_headers(username="admin", password="123456"),
-            response_spec=ResponseSpecs.request_bad()
-        ).post(create_user_request)
+        api_manager.admin_steps.create_invalid_user(create_user_request)
 
 
