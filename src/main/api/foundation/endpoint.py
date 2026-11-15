@@ -6,6 +6,8 @@ from enum import Enum
 from src.main.api.models.create_account_response import CreateAccountResponse
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
+from src.main.api.models.deposit_request import DepositRequest
+from src.main.api.models.deposit_response import DepositResponse
 from src.main.api.models.login_user_response import LoginUserResponse
 
 
@@ -40,3 +42,10 @@ class Endpoint(Enum):
         url="/account/create",
         response_model=CreateAccountResponse
     )
+
+    DEPOSIT = EndpointConfiguration(
+        request_model=DepositRequest,
+        url="/account/deposit",
+        response_model=DepositResponse
+    )
+
