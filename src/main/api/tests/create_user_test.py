@@ -2,7 +2,7 @@ from src.main.api.generators.model_generator import RandomModelGenerator
 from src.main.api.models.create_user_request import CreateUserRequest
 import pytest
 
-@pytest.mark.senior
+@pytest.mark.api
 class TestCreateUser:
 
     @pytest.mark.parametrize("create_user_request", [RandomModelGenerator.generate(CreateUserRequest)])

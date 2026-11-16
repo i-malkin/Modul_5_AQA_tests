@@ -3,7 +3,7 @@ from src.main.api.models.deposit_request import DepositRequest
 import pytest
 
 
-@pytest.mark.senior
+@pytest.mark.api
 class TestTransfer:
 
     def test_transfer_positive(self, api_manager, create_user_request, account, second_account):

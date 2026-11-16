@@ -2,7 +2,7 @@ from src.main.api.models.deposit_request import DepositRequest
 import pytest
 
 
-@pytest.mark.senior
+@pytest.mark.api
 class TestDepositReplenishment:
 
     def test_deposit_replenishment_positive(self, api_manager, create_user_request, account):

@@ -2,7 +2,7 @@ from src.main.api.models.login_user_request import LoginUserRequest
 import pytest
 
 
-@pytest.mark.senior
+@pytest.mark.api
 class TestUserLogin:
     def test_login_admin(self, api_manager):
         login_user_request = LoginUserRequest(username="admin", password="123456")

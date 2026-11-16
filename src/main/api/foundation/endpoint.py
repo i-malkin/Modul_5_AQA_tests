@@ -11,6 +11,8 @@ from src.main.api.models.credit_response import CreditResponse
 from src.main.api.models.deposit_request import DepositRequest
 from src.main.api.models.deposit_response import DepositResponse
 from src.main.api.models.login_user_response import LoginUserResponse
+from src.main.api.models.repay_request import RepayRequest
+from src.main.api.models.repay_response import RepayResponse
 from src.main.api.models.transfer_request import TransferRequest
 from src.main.api.models.transfer_response import TransferResponse
 
@@ -65,3 +67,8 @@ class Endpoint(Enum):
         response_model=CreditResponse
     )
 
+    CREDIT_REPAY = EndpointConfiguration(
+        request_model=RepayRequest,
+        url="/credit/repay",
+        response_model=RepayResponse
+    )
