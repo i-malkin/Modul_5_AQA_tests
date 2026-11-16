@@ -1,7 +1,10 @@
+from Scripts.bottle import response
+
 from src.main.api.foundation.endpoint import Endpoint
 from src.main.api.foundation.requesters.crud_requester import CrudRequester
 from src.main.api.foundation.requesters.validate_crude_requester import ValidateCruseRequester
 from src.main.api.models.create_user_request import CreateUserRequest
+from src.main.api.models.credit_request import CreditRequest
 from src.main.api.models.deposit_request import DepositRequest
 from src.main.api.models.transfer_request import TransferRequest
 from src.main.api.specs.request_specs import RequestSpecs
@@ -55,3 +58,13 @@ class UserSteps(BaseSteps):
             ResponseSpecs.request_bad()
         ).post(transfer_request)
         return response
+
+    def credit_request(self, create_user_request: CreateUserRequest, credit_request: CreditRequest):
+        response = ValidateCruseRequester(
+            RequestSpecs.auth_headers(username=create_user_request.username,
+                                      password=create_user_request.password),
+            Endpoint.CREDIT_REQUEST,
+            ResponseSpecs.request_created()
+        ).post(credit_request)
+        return response
+
