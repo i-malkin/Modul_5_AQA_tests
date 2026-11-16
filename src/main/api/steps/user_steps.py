@@ -3,6 +3,7 @@ from src.main.api.foundation.requesters.crud_requester import CrudRequester
 from src.main.api.foundation.requesters.validate_crude_requester import ValidateCruseRequester
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.deposit_request import DepositRequest
+from src.main.api.models.transfer_request import TransferRequest
 from src.main.api.specs.request_specs import RequestSpecs
 from src.main.api.specs.response_specs import ResponseSpecs
 from src.main.api.steps.base_steps import BaseSteps
@@ -37,4 +38,20 @@ class UserSteps(BaseSteps):
         ).post(deposit_request)
         return response
 
+    def transfer(self, create_user_request: CreateUserRequest, transfer_request: TransferRequest):
+        response = ValidateCruseRequester(
+            RequestSpecs.auth_headers(username=create_user_request.username,
+                                      password=create_user_request.password),
+            Endpoint.TRANSFER,
+            ResponseSpecs.request_ok()
+        ).post(transfer_request)
+        return response
 
+    def transfer_invalid(self, create_user_request: CreateUserRequest, transfer_request: TransferRequest):
+        response = CrudRequester(
+            RequestSpecs.auth_headers(username=create_user_request.username,
+                                      password=create_user_request.password),
+            Endpoint.TRANSFER,
+            ResponseSpecs.request_bad()
+        ).post(transfer_request)
+        return response
