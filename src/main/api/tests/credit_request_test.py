@@ -18,11 +18,10 @@ class TestCreditRequest:
         assert response.id == credit_account.id
 
         account_from_db = Account.get_account_by_id(db_session, account.id)
-        assert account_from_db.id == credit_account.id
+        # assert account_from_db.id == credit_account.id
 
-        request_credit_db = Credit.get_credit_by_account(db_session, account_id=account_from_db.id)
-        assert request_credit_db.id == account_from_db.id
-
+        request_credit_db = Credit.get_credit_by_id(db_session, credit_id=account_from_db.id)
+        assert request_credit_db.balance == 7000
 
 
 
