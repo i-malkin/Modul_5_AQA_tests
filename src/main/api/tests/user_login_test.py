@@ -17,3 +17,4 @@ class TestUserLogin:
 
         assert create_user_request.username == response.user.username
         assert response.user.role == "ROLE_USER"
+

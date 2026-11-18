@@ -1,32 +1,60 @@
 # Bank API · AQA tests
 
-Автотесты REST API учебного банка. **Python · pytest · requests · pydantic · Allure**
+Автотесты для учебного банковского приложения: **REST API** и **проверки состояния в БД**.
+Стек: `Python` · `pytest` · `requests` · `pydantic` · `SQLAlchemy` · `PostgreSQL` · `Allure`
 
-## Что проверяем
-Админ и пользователь: создание юзера, логин, счёт, пополнение, перевод, кредит и погашение
-(`/admin/create`, `/auth/token/login`, `/account/create|deposit|transfer`, `/credit/request|repay`).
+---
 
-## Структура (`src/main/api/`)
+## Что покрыто
+
+| Область | Ручки / сценарии | Тесты |
+|---|---|---|
+| Администратор | `POST /admin/create` (создание юзера) | позитив + 9 негативных (валидация логина и пароля) |
+| Авторизация | `POST /auth/token/login` | админ и обычный пользователь |
+| Счета | `POST /account/create` | создание счёта |
+| Пополнение | `POST /account/deposit` | позитив + границы суммы (1000–9000) |
+| Перевод | `POST /account/transfer` | позитив + границы суммы (500–10000) |
+| Кредит | `POST /credit/request`, `POST /credit/repay` | выдача и полное погашение, границы (5000–15000), частичное погашение запрещено |
+
+Каждый сценарий проверяется **двумя каналами**: ответ API и состояние базы (остатки счетов, кредиты, операции `deposit`, `transfer`, `credit_issuance`, `credit_repayment`).
+
+---
+
+## Структура проекта
+
 ```
-tests/        тесты, по файлу на ручку (позитив + негатив)
-steps/        бизнес-шаги: admin_steps, user_steps
-classes/      api_manager: единая точка доступа к шагам
-foundation/   ядро: Endpoint (Enum), http / crud / validate requesters
-models/       pydantic-модели запросов и ответов
-generators/   RandomModelGenerator: случайные данные по type hints и regex
-fixtures/     pytest-фикстуры: юзер, счёт, кредит, очистка данных
-specs/        заголовки запросов и проверки статус-кодов
-configs/      Config (Singleton), читает resources/urls.properties
+src/main/api/
+├── tests/         тесты: по файлу на ручку, позитив и негатив
+├── steps/         бизнес-шаги: admin_steps, user_steps
+├── classes/       api_manager — единая точка доступа ко всем шагам
+├── foundation/    ядро: Endpoint (Enum), CrudEndpoint (Protocol),
+│                  http_requester → crud_requester → validate_crud_requester
+├── models/        pydantic-модели запросов и ответов
+├── specs/         заголовки запросов и проверки статус-кодов
+├── generators/    RandomModelGenerator: случайные данные по type hints и regex
+├── db/            слой БД (SQLAlchemy): engine, ORM-модели таблиц, CRUD-запросы
+├── fixtures/      pytest-фикстуры: api_manager, юзеры, счёт, кредит, db_session,
+│                  автоматическая очистка созданных данных
+└── configs/       Config (Singleton), читает resources/urls.properties
+resources/         urls.properties — адреса API и базы данных
+conftest.py        регистрация фикстур · pytest.ini — маркеры и настройки запуска
 ```
+
+**Как это работает:** тест получает готовые данные через фикстуры и вызывает действия через `api_manager` → шаги → requesters (с отчётами Allure). Результат проверяется по ответу API и запросом в БД через `db_session`.
+
+---
 
 ## Запуск
-1. Подними стенд банка в Docker (API: `http://localhost:4111/api`)
-2. `pip install -r requirements.txt`
-3. `pytest -m api`
-4. Отчёт: `pytest --alluredir=allure-results`, затем `allure serve allure-results`
+
+1. Подними стенд банка (Docker): API `http://localhost:4111/api`, PostgreSQL `localhost:5432`
+2. Установи зависимости: `pip install -r requirements.txt` (нужен Python 3.12+)
+3. Запусти тесты: `pytest -m api`
+4. Отчёт Allure: `pytest --alluredir=allure-results`, затем `allure serve allure-results`
+
+Маркеры: `api` — API-тесты (с проверками БД), `db` — зарезервирован для отдельных БД-тестов.
+
+---
 
 ## Ветки
-`junior` → `middle` → `master` (Senior): эволюция архитектуры от плоских тестов до слоёв и фикстур.
 
-## В планах
-Проверки состояния в БД (SQLAlchemy, слой `db/`, маркер `db`).
+`junior` → `middle` → `master` — эволюция архитектуры: плоские тесты → слои (models, requests, specs) → фреймворк (foundation, steps, фикстуры, генераторы, БД).
