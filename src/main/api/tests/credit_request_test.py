@@ -7,18 +7,17 @@ import pytest
 @pytest.mark.api
 class TestCreditRequest:
 
-    def test_credit_request_positive(self, api_manager, create_credit_user_request, db_session: Session):
-        credit_account = api_manager.user_steps.create_account(create_credit_user_request)
-        credit_request = CreditRequest(accountId=credit_account.id, amount=7000, termMonths=12)
-        response = api_manager.user_steps.credit_request(create_credit_user_request, credit_request)
+    def test_credit_request_positive(self, credit, db_session: Session):
 
-        assert response.balance == 7000
-        assert response.id == credit_account.id
+        response, credit_account, credit_amount = credit
+
+        assert response.balance == credit_amount, "Баланс в ответе API не совпадает с суммой оформленного кредита"
+        assert response.id == credit_account.id, "ID счёта в ответе API не совпадает с созданным счётом"
 
         credit_db = Credit.get_credit_by_id(db_session, credit_id=response.creditId)
-        assert credit_db is not None
-        assert credit_db.amount == 7000
-        assert credit_db.account_id == credit_account.id
+        assert credit_db is not None, "Запись о кредите отсутствует в БД"
+        assert credit_db.amount == credit_amount, "Сумма кредита в БД не совпадает с суммой запроса"
+        assert credit_db.account_id == credit_account.id, "Кредит привязан к неверному счёту в БД"
 
 
     @pytest.mark.parametrize("amount", [-1, 0, 4999, 15001])
@@ -27,9 +26,9 @@ class TestCreditRequest:
         credit_request = CreditRequest(accountId=credit_account.id, amount=amount, termMonths=12)
         response = api_manager.user_steps.credit_request_invalid(create_credit_user_request, credit_request)
 
-        assert "Amount must be between 5000 and 15000" in response.json()["error"]
+        assert "Amount must be between 5000 and 15000" in response.json()["error"], f"Для некорректной суммы {amount} не получена ожидаемая ошибка"
 
         credit_db = Credit.get_credit_by_account_id(db_session, account_id=credit_account.id)
-        assert credit_db is None
+        assert credit_db is None, f"Для некорректной суммы {amount} в БД не должно быть создано записи о кредите"
 
 
