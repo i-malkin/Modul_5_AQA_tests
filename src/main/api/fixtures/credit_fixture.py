@@ -1,13 +1,19 @@
 
 import pytest
-
+from src.main.api.classes.api_manager import ApiManager
+from src.main.api.models.create_user_request import CreateUserRequest
+from src.main.api.models.credit_response import CreditResponse
+from src.main.api.models.create_account_response import CreateAccountResponse
 from src.main.api.models.credit_request import CreditRequest
 from src.main.api.generators.test_data import generate_credit_amount
 
 
 @pytest.fixture
-def credit(api_manager, create_credit_user_request):
-    # ДОБАВИЛИ: генерируем сумму кредита в диапазоне из ТЗ
+def credit(
+    api_manager: ApiManager,
+    create_credit_user_request: CreateUserRequest
+) -> tuple[CreditResponse, CreateAccountResponse, float]:
+
     credit_amount = generate_credit_amount()
 
     # Создаём счёт — предусловие для оформления кредита

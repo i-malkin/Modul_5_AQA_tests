@@ -1,6 +1,9 @@
+from src.main.api.classes.api_manager import ApiManager
 from src.main.api.db.crud.transaction_crud import TransactionCrudDb as Transaction
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
 from src.main.api.generators.test_data import generate_deposit_amount
+from src.main.api.models.create_account_response import CreateAccountResponse
+from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.deposit_request import DepositRequest
 from sqlalchemy.orm import Session
 import pytest
@@ -9,7 +12,9 @@ import pytest
 @pytest.mark.api
 class TestDepositReplenishment:
 
-    def test_deposit_replenishment_positive(self, api_manager, create_user_request, account, db_session: Session) -> None:
+    def test_deposit_replenishment_positive(self, api_manager: ApiManager,
+                                            create_user_request: CreateUserRequest,
+                                            account: CreateAccountResponse, db_session: Session) -> None:
         amount = generate_deposit_amount()
         deposit_request = DepositRequest(accountId=account.id, amount=amount)
         response = api_manager.user_steps.deposit(create_user_request, deposit_request)
@@ -28,14 +33,17 @@ class TestDepositReplenishment:
 
 
     @pytest.mark.parametrize("amount", [-100, 0, 999, 9001])
-    def test_deposit_replenishment_negative(self, amount, api_manager, create_user_request, account, db_session: Session) -> None:
+    def test_deposit_replenishment_negative(self, amount: int, api_manager: ApiManager,
+                                            create_user_request: CreateUserRequest,
+                                            account: CreateAccountResponse, db_session: Session) -> None:
         deposit_request = DepositRequest(accountId=account.id, amount=amount)
         response = api_manager.user_steps.deposit_invalid(create_user_request, deposit_request)
 
-        assert "Amount must be between 1000 and 9000" in response.json()["error"]
+        assert "Amount must be between 1000 and 9000" in response.json()["error"], \
+            "При некорректной сумме пополнения API вернул неожиданную ошибку"
 
         account_from_db = Account.get_account_by_id(db_session, account.id)
-        assert account_from_db.balance == 0, "Баланс счета должен быть равен нулю"
+        assert account_from_db.balance == 0, "Баланс счёта изменился после отклонённого пополнения"
 
         transactions = Transaction.get_transactions_by_to_account_and_type(db_session, account.id, "deposit")
-        assert len(transactions) == 0, "Операция deposit создана, хотя запрос отклонён"
+        assert len(transactions) == 0, "Транзакция deposit появилась в БД, хотя запрос был отклонён"

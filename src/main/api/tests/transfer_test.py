@@ -1,15 +1,21 @@
+from src.main.api.classes.api_manager import ApiManager
 from src.main.api.db.crud.transaction_crud import TransactionCrudDb as Transaction
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
 from src.main.api.generators.test_data import generate_transfer_amount
+from src.main.api.models.create_account_response import CreateAccountResponse
+from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.transfer_request import TransferRequest
 from sqlalchemy.orm import Session
+from requests import Response
 import pytest
 
 
 @pytest.mark.api
 class TestTransfer:
 
-    def test_transfer_positive(self, api_manager, create_user_request, funded_account, second_account, db_session: Session):
+    def test_transfer_positive(self, api_manager: ApiManager, create_user_request: CreateUserRequest,
+                               funded_account: tuple[CreateAccountResponse, float],
+                               second_account: CreateAccountResponse, db_session: Session) -> None:
         account, deposit_amount = funded_account
         transfer_amount = generate_transfer_amount(deposit_amount)
 
@@ -23,10 +29,10 @@ class TestTransfer:
         assert response.toAccountId == second_account.id, "ID счёта получателя в ответе не совпадает с ожидаемым"
 
         sender_from_db = Account.get_account_by_id(db_session, account.id)
-        assert sender_from_db.balance == (deposit_amount - transfer_amount), "Баланс счёта отправителя в БД не соответствует результату перевода"
+        assert round(sender_from_db.balance, 2) == round(deposit_amount - transfer_amount, 2), "Баланс счёта отправителя в БД не соответствует результату перевода"
 
         receiver_from_db = Account.get_account_by_id(db_session, second_account.id)
-        assert receiver_from_db.balance == transfer_amount, "Баланс счёта получателя в БД не соответствует сумме перевода"
+        assert round(receiver_from_db.balance, 2) == round(transfer_amount, 2), "Баланс счёта получателя в БД не соответствует сумме перевода"
 
         transactions = Transaction.get_transactions_by_to_account_and_type(
             db_session, second_account.id, "transfer")
@@ -42,8 +48,10 @@ class TestTransfer:
         (499, "Amount must be between 500 and 10000"),
         (10001, "Amount must be between 500 and 10000"),
     ])
-    def test_transfer_negative(self, amount, expected_error, api_manager, create_user_request, funded_account,
-                               second_account, db_session: Session):
+    def test_transfer_negative(self, amount: int, expected_error: str, api_manager: ApiManager,
+                               create_user_request: CreateUserRequest,
+                               funded_account: tuple[CreateAccountResponse, float],
+                               second_account: CreateAccountResponse, db_session: Session) -> None:
         account, deposit_amount = funded_account
         transfer_request = TransferRequest(fromAccountId=account.id,
                                            toAccountId=second_account.id,

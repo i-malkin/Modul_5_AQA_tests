@@ -9,11 +9,11 @@ import pytest
 class TestCreateUser:
 
     @pytest.mark.parametrize("create_user_request", [RandomModelGenerator.generate(CreateUserRequest)])
-    def test_create_user_valid(self, api_manager: ApiManager, create_user_request: CreateUserRequest, db_session: Session):
+    def test_create_user_valid(self, api_manager: ApiManager, create_user_request: CreateUserRequest, db_session: Session) -> None:
         response = api_manager.admin_steps.create_user(create_user_request)
 
-        assert create_user_request.username == response.username
-        assert create_user_request.role == response.role
+        assert create_user_request.username == response.username, "Username созданного пользователя не совпадает с отправленным"
+        assert create_user_request.role == response.role,  "Роль созданного пользователя не совпадает с указанной в запросе"
 
         user_from_db = User.get_user_by_username(db_session, create_user_request.username)
         assert user_from_db.username == create_user_request.username, "Созданного пользователя нет в БД"
@@ -32,7 +32,7 @@ class TestCreateUser:
             ("Max6", "PAS!SWRRD"),
         ]
     )
-    def test_create_user_invalid(self, username: str, password: str, api_manager: ApiManager, db_session: Session):
+    def test_create_user_invalid(self, username: str, password: str, api_manager: ApiManager, db_session: Session) -> None:
         create_user_request = CreateUserRequest(username=username, password=password, role="ROLE_USER")
         api_manager.admin_steps.create_invalid_user(create_user_request)
 
