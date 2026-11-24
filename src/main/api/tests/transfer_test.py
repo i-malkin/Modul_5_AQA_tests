@@ -1,12 +1,11 @@
-from src.main.api.classes.api_manager import ApiManager
 from src.main.api.db.crud.transaction_crud import TransactionCrudDb as Transaction
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
-from src.main.api.generators.test_data import generate_transfer_amount
+from src.main.api.generators.test_data import generate_transfer_amount, invalid_transfer_cases
 from src.main.api.models.create_account_response import CreateAccountResponse
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.transfer_request import TransferRequest
+from src.main.api.classes.api_manager import ApiManager
 from sqlalchemy.orm import Session
-from requests import Response
 import pytest
 
 
@@ -42,13 +41,8 @@ class TestTransfer:
 
 
 
-    @pytest.mark.parametrize("amount, expected_error", [
-        (-1, "Amount must be greater than 0"),
-        (0, "Amount must be greater than 0"),
-        (499, "Amount must be between 500 and 10000"),
-        (10001, "Amount must be between 500 and 10000"),
-    ])
-    def test_transfer_negative(self, amount: int, expected_error: str, api_manager: ApiManager,
+    @pytest.mark.parametrize("amount, expected_error", invalid_transfer_cases())
+    def test_transfer_negative(self, amount: float, expected_error: str, api_manager: ApiManager,
                                create_user_request: CreateUserRequest,
                                funded_account: tuple[CreateAccountResponse, float],
                                second_account: CreateAccountResponse, db_session: Session) -> None:

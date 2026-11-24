@@ -1,7 +1,7 @@
 from src.main.api.classes.api_manager import ApiManager
 from src.main.api.db.crud.transaction_crud import TransactionCrudDb as Transaction
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
-from src.main.api.generators.test_data import generate_deposit_amount
+from src.main.api.generators.test_data import generate_deposit_amount, invalid_deposit_amounts, DEPOSIT_RANGE_ERROR
 from src.main.api.models.create_account_response import CreateAccountResponse
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.deposit_request import DepositRequest
@@ -32,14 +32,14 @@ class TestDepositReplenishment:
 
 
 
-    @pytest.mark.parametrize("amount", [-100, 0, 999, 9001])
-    def test_deposit_replenishment_negative(self, amount: int, api_manager: ApiManager,
+    @pytest.mark.parametrize("amount", invalid_deposit_amounts())
+    def test_deposit_replenishment_negative(self, amount: float, api_manager: ApiManager,
                                             create_user_request: CreateUserRequest,
                                             account: CreateAccountResponse, db_session: Session) -> None:
         deposit_request = DepositRequest(accountId=account.id, amount=amount)
         response = api_manager.user_steps.deposit_invalid(create_user_request, deposit_request)
 
-        assert "Amount must be between 1000 and 9000" in response.json()["error"], \
+        assert DEPOSIT_RANGE_ERROR in response.json()["error"], \
             "При некорректной сумме пополнения API вернул неожиданную ошибку"
 
         account_from_db = Account.get_account_by_id(db_session, account.id)

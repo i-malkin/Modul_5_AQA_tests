@@ -6,7 +6,7 @@ import rstr, uuid, random
 
 class RandomModelGenerator:
     @staticmethod
-    def generate(cls) -> Any:
+    def generate(cls: type) -> Any:
         type_hints = get_type_hints(cls, include_extras=True)
         init_data = {}
 
@@ -38,7 +38,7 @@ class RandomModelGenerator:
         return cls(**init_data)
 
     @staticmethod
-    def _get_default(cls, field_name: str):
+    def _get_default(cls: type, field_name: str) -> Any:
         # pydantic v2
         model_fields = getattr(cls, "model_fields", None)
         if model_fields and field_name in model_fields:

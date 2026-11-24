@@ -1,8 +1,10 @@
 import pytest
+from typing import Iterator
+from sqlalchemy.orm import Session
 from src.main.api.db.engine import SessionLocal, engine
 
 @pytest.fixture(scope='function')
-def db_session():
+def db_session() -> Iterator[Session]:
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionLocal(bind=connection)

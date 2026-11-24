@@ -1,17 +1,17 @@
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.classes.api_manager import ApiManager
-from typing import List, Any
+from typing import List, Any, Iterator
 import logging, pytest
 
 
 @pytest.fixture
-def created_obj():
+def created_obj() -> Iterator[List[Any]]:
     objects: List[Any] = []
     yield objects
     clean_user(objects)
 
 
-def clean_user(objects: List[Any]):
+def clean_user(objects: List[Any]) -> None:
     api_manager = ApiManager(objects)
     for u in objects:
         if isinstance(u, CreateUserResponse):

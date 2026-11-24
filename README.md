@@ -31,16 +31,22 @@ src/main/api/
 │                  http_requester → crud_requester → validate_crud_requester
 ├── models/        pydantic-модели запросов и ответов
 ├── specs/         заголовки запросов и проверки статус-кодов
-├── generators/    RandomModelGenerator: случайные данные по type hints и regex
+├── generators/    RandomModelGenerator (случайные модели по type hints и regex),
+│                  test_data — диапазоны сумм, тексты ошибок и генераторы данных
 ├── db/            слой БД (SQLAlchemy): engine, ORM-модели таблиц, CRUD-запросы
-├── fixtures/      pytest-фикстуры: api_manager, юзеры, счёт, кредит, db_session,
-│                  автоматическая очистка созданных данных
+├── fixtures/      pytest-фикстуры: api_manager, юзеры, счета, funded_account
+│                  (счёт с депозитом), кредит, db_session, автоочистка данных
 └── configs/       Config (Singleton), читает resources/urls.properties
 resources/         urls.properties — адреса API и базы данных
 conftest.py        регистрация фикстур · pytest.ini — маркеры и настройки запуска
 ```
 
-**Как это работает:** тест получает готовые данные через фикстуры и вызывает действия через `api_manager` → шаги → requesters (с отчётами Allure). Результат проверяется по ответу API и запросом в БД через `db_session`.
+**Как это работает:** предусловия (пользователь, счёт, депозит, кредит) готовят фикстуры, поэтому тест состоит из целевого шага и проверок. Шаг вызывается через `api_manager` → steps → requesters (с отчётами Allure). Результат проверяется по ответу API и запросом в БД через `db_session`.
+
+**Принципы кода:**
+* Тестовые данные не хардкодятся: суммы генерируются в допустимых диапазонах (`generators/test_data.py`), невалидные значения считаются от границ диапазона.
+* Везде проставлены аннотации типов (`api_manager: ApiManager`).
+* У каждого `assert` есть сообщение, объясняющее причину падения.
 
 ---
 
